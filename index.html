@@ -1,0 +1,109 @@
+<!--
+Project: Automated Student Attendance Monitoring and Analytics System (Frontend Prototype)
+Files included below (paste into three separate files):
+  1) index.html
+  2) styles.css
+  3) app.js
+
+Instructions: Create a project folder, add the three files with the exact names, then open index.html in a modern browser (Chrome/Edge/Firefox).
+
+Notes:
+- This is a client-side prototype demonstrating: QR-like check-in (simulated), manual check-in, attendance table, and a small analytics panel (attendance % + simple bar chart).
+- For production you'd connect the app.js APIs to a backend (cloud DB), implement secure biometric/facial modules, and add authentication/authorization.
+- Comments in code explain how to extend and integrate other attendance capture options (QR libraries, biometric SDKs, face APIs).
+-->
+
+<!-- ========================= index.html ========================= -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Automated Attendance — Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Automated Attendance Monitoring</h1>
+    <p class="subtitle">Prototype — HTML • CSS • JavaScript</p>
+  </header>
+
+  <main class="container">
+    <section class="left">
+      <div class="card">
+        <h2>Take Attendance</h2>
+        <div class="modes">
+          <button id="mode-qr" class="mode-btn active">QR / Student ID</button>
+          <button id="mode-manual" class="mode-btn">Manual</button>
+          <button id="mode-facial" class="mode-btn">Facial (sim)</button>
+        </div>
+
+        <div id="qr-area" class="mode-area">
+          <p>Scan QR code or enter Student ID to mark present.</p>
+          <div class="qr-controls">
+            <input id="student-id-input" type="text" placeholder="Enter Student ID or scan" />
+            <button id="mark-present">Mark Present</button>
+          </div>
+          <small>Tip: This prototype accepts student IDs (e.g. S001). You can extend it with a real QR scanner (jsQR) or a backend verification.</small>
+        </div>
+
+        <div id="manual-area" class="mode-area hidden">
+          <p>Manual entry: add a new student record (for testing).</p>
+          <input id="new-student-name" type="text" placeholder="Full name" />
+          <input id="new-student-id" type="text" placeholder="Student ID (e.g. S010)" />
+          <button id="add-student">Add Student</button>
+        </div>
+
+        <div id="facial-area" class="mode-area hidden">
+          <p>Facial recognition is simulated in this prototype.</p>
+          <button id="simulate-face">Simulate Face Match (Random Student)</button>
+          <small>To integrate real face recognition, use a secure, privacy-preserving SDK or backend service and obtain consent.</small>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Attendance Controls</h2>
+        <div class="controls-row">
+          <button id="clear-today">Clear Today's Attendance</button>
+          <button id="export-csv">Export CSV</button>
+        </div>
+        <div class="smallprint">CSV export produces a simple snapshot you can upload to a backend or cloud storage.</div>
+      </div>
+    </section>
+
+    <section class="right">
+      <div class="card">
+        <h2>Today's Attendance</h2>
+        <table id="attendance-table">
+          <thead>
+            <tr><th>Student ID</th><th>Name</th><th>Status</th><th>Time</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Analytics</h2>
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-num" id="percent-present">0%</div>
+            <div class="stat-label">Present</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num" id="total-students">0</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+        </div>
+        <canvas id="bar-chart" width="400" height="180"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Prototype by Yash — modify for production (add backend, auth, secure biometric integrations).
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
