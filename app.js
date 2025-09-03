@@ -1,7 +1,3 @@
-
-/* ========================= app.js ========================= */
-// Paste into app.js
-
 // --- Sample dataset (would normally come from a backend) ---
 const students = [
   { id: 'S001', name: 'Ananya Sharma' },
@@ -40,6 +36,13 @@ const simulateFaceBtn = document.getElementById('simulate-face');
 const clearTodayBtn = document.getElementById('clear-today');
 const exportCsvBtn = document.getElementById('export-csv');
 
+// search DOM refs
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+const searchResult = document.getElementById('search-result');
+const downloadStudentCsvBtn = document.getElementById('download-student-csv');
+let lastSearchedStudent = null;
+
 // Utility: switch mode UI
 function setMode(mode){
   [modeQR, modeManual, modeFacial].forEach(b=>b.classList.remove('active'));
@@ -55,7 +58,6 @@ modeFacial.addEventListener('click', ()=>setMode('facial'));
 // Render attendance table
 function renderTable(){
   tbody.innerHTML='';
-  // show all students and their status
   students.forEach(s=>{
     const row = document.createElement('tr');
     const status = attendance.has(s.id) ? 'Present' : 'Absent';
@@ -64,7 +66,6 @@ function renderTable(){
     tbody.appendChild(row);
   });
 
-  // update analytics
   const total = students.length;
   const present = [...attendance.keys()].filter(id => students.find(s=>s.id===id)).length;
   const percent = total===0?0:Math.round((present/total)*100);
@@ -76,11 +77,8 @@ function renderTable(){
 // Mark present
 function markPresent(studentId){
   const std = students.find(s=>s.id.toLowerCase()===studentId.toLowerCase());
-  if(!std){ alert('Student ID not found in the class list. Add the student via Manual → Add Student.'); return; }
-  if(attendance.has(std.id)){
-    alert(std.name + ' is already marked present.');
-    return;
-  }
+  if(!std){ alert('Student ID not found. Add via Manual → Add Student.'); return; }
+  if(attendance.has(std.id)){ alert(std.name + ' is already marked present.'); return; }
   attendance.set(std.id, { time: new Date().toISOString(), method: 'qr' });
   renderTable();
 }
@@ -120,7 +118,7 @@ clearTodayBtn.addEventListener('click', ()=>{
   renderTable();
 });
 
-// Export CSV
+// Export all students CSV
 exportCsvBtn.addEventListener('click', ()=>{
   const rows = [['Student ID','Name','Status','Time']];
   students.forEach(s=>{
@@ -137,7 +135,59 @@ exportCsvBtn.addEventListener('click', ()=>{
   URL.revokeObjectURL(url);
 });
 
-// Basic bar chart (no libraries) — draws present vs absent
+// ---- Search Student ----
+function searchStudent(query) {
+  query = query.toLowerCase();
+  const found = students.find(s => 
+    s.id.toLowerCase() === query || s.name.toLowerCase().includes(query)
+  );
+
+  if (!found) {
+    searchResult.innerHTML = `<p style="color:red;">No student found</p>`;
+    lastSearchedStudent = null;
+    return;
+  }
+
+  const status = attendance.has(found.id) ? 'Present' : 'Absent';
+  const time = attendance.has(found.id) ? new Date(attendance.get(found.id).time).toLocaleString() : '-';
+
+  searchResult.innerHTML = `
+    <p><b>ID:</b> ${found.id}</p>
+    <p><b>Name:</b> ${found.name}</p>
+    <p><b>Status:</b> ${status}</p>
+    <p><b>Time:</b> ${time}</p>
+  `;
+
+  lastSearchedStudent = { ...found, status, time };
+}
+
+searchBtn.addEventListener('click', () => {
+  const query = searchInput.value.trim();
+  if (!query) return alert("Enter student ID or name");
+  searchStudent(query);
+});
+
+// Download CSV for searched student
+downloadStudentCsvBtn.addEventListener('click', () => {
+  if (!lastSearchedStudent) {
+    alert("Search a student first!");
+    return;
+  }
+
+  const rows = [['Student ID','Name','Status','Time']];
+  rows.push([lastSearchedStudent.id, lastSearchedStudent.name, lastSearchedStudent.status, lastSearchedStudent.time]);
+
+  const csvContent = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csvContent], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `student_${lastSearchedStudent.id}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// Basic bar chart (no libraries)
 function drawBarChart(present, absent){
   const ctx = barCanvas.getContext('2d');
   const W = barCanvas.width; const H = barCanvas.height;
@@ -146,19 +196,16 @@ function drawBarChart(present, absent){
   const pH = Math.round((present/total)*H*0.8);
   const aH = Math.round((absent/total)*H*0.8);
 
-  // labels
   ctx.font = '14px sans-serif';
   ctx.fillStyle = '#111827';
   ctx.fillText('Present', 40, H - pH - 30);
   ctx.fillText('Absent', W/2 + 40, H - aH - 30);
 
-  // bars
   ctx.fillStyle = '#16a34a';
   ctx.fillRect(40, H - pH - 10, 80, pH);
   ctx.fillStyle = '#ef4444';
   ctx.fillRect(W/2 + 40, H - aH - 10, 80, aH);
 
-  // values
   ctx.fillStyle = '#000';
   ctx.fillText(present, 40+30, H - pH - 15);
   ctx.fillText(absent, W/2 + 40 + 30, H - aH - 15);
@@ -166,12 +213,3 @@ function drawBarChart(present, absent){
 
 // Initialize
 renderTable();
-
-// ---- Extension notes (in-code) ----
-// 1) To integrate QR scanning: include a library like jsQR and use getUserMedia to feed camera frames and decode QR payloads (which would carry student ID).
-//    Example lib: https://github.com/cozmo/jsQR (CDN available)
-// 2) For facial recognition: use a secure cloud API (AWS Rekognition, Azure Face, or a privacy-focused on-prem SDK) — do NOT store biometric templates without consent.
-// 3) Backend: send attendance records to a cloud DB (Firestore, Postgres) with endpoints to fetch historical records and compute trends.
-// 4) Offline mode: store attendance in IndexedDB and sync when online.
-
-// End of file
