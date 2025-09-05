@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Analytics - Attendance Monitoring</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Attendance Monitoring</h1>
+    <nav class="navbar">
+      <a href="index.html">Home</a>
+      <a href="analytics.html" class="active">Analytics</a>
+      <a href="monthly.html">Monthly Data</a>
+    </nav>
+    <div class="nav-right">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Analytics Dashboard</h2>
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-num" id="percent-present">0%</div>
+          <div class="stat-label">Present</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="total-students">0</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+      </div>
+      <canvas id="bar-chart" width="400" height="200"></canvas>
+    </section>
+  </main>
+
+  <script>
+    function logout() {
+      alert("You have been logged out!");
+      window.location.href = "login.html";
+    }
+  </script>
+  <script src="analytics.js"></script>
+</body>
+</html>
+    

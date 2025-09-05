@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Monthly Data - Attendance Monitoring</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Attendance Monitoring</h1>
+    <nav class="navbar">
+      <a href="index.html">Home</a>
+      <a href="analytics.html">Analytics</a>
+      <a href="monthly.html" class="active">Monthly Data</a>
+    </nav>
+    <div class="nav-right">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Monthly Attendance Data</h2>
+      <table id="monthly-table">
+        <thead>
+          <tr><th>Date</th><th>Student ID</th><th>Name</th><th>Status</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="export-monthly">Export CSV</button>
+    </section>
+  </main>
+
+  <script>
+    function logout() {
+      alert("You have been logged out!");
+      window.location.href = "login.html";
+    }
+  </script>
+  <script src="monthly.js"></script>
+</body>
+</html>

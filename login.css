@@ -1,0 +1,156 @@
+:root {
+  --bg1: #011c55;
+  --bg2: #2563eb;
+  --card: rgba(255, 255, 255, 0.15);
+  --accent: #011c55;
+  --muted: #6b7280;
+}
+
+/* Background with gradient */
+body {
+  font-family: 'Inter', system-ui, Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+}
+
+/* Center wrapper */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Login Card (Glass effect) */
+.login-container {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  padding: 35px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  color: white;
+  animation: fadeIn 1s ease;
+}
+
+.login-container h2 {
+  margin-bottom: 25px;
+  font-size: 22px;
+  color: #fff;
+}
+
+/* Inputs & Select */
+.login-container input,
+.login-container select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Password eye wrapper */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 10px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--muted);
+}
+
+/* Button */
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #fff;
+  color: var(--accent);
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-container button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Forgot Password */
+.login-container a {
+  color: #fff;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.login-container a:hover {
+  text-decoration: underline;
+}
+
+#msg {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 25px;
+    border-radius: 12px;
+  }
+
+  .login-container h2 {
+    font-size: 18px;
+  }
+}
+
+
+/* Make all inputs & select same width */
+.login-container input,
+.login-container select,
+.password-wrapper {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.9);
+  box-sizing: border-box; /* keeps widths consistent */
+}
+
+/* Remove duplicate padding on password input */
+.password-wrapper input {
+  width: 100%;
+  padding-right:20px; /* space for eye icon */
+  margin: 0; /* prevent double margin */
+}

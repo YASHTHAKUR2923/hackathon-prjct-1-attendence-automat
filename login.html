@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Attendance</title>
+  <link rel="stylesheet" href="login.css">
+  <!-- Font Awesome for eye icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-container">
+      <h2>Attendance System Login</h2>
+      
+      <input type="text" id="username" placeholder="Username" required>
+
+      <!-- ✅ Password field with eye icon -->
+      <div class="password-wrapper">
+        <input type="password" id="password" placeholder="Password" required>
+        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+      </div>
+
+      <button onclick="login()">Login</button>
+      <p><a href="#" onclick="resetPassword()">Forgot Password?</a></p>
+      <p id="msg"></p>
+    </div>
+  </div>
+
+  <script>
+    const users = [
+      { username: "admin", password: "1234", mobile: "8979584279" },
+      { username: "rahul", password: "pass123", mobile: "9998887777" }
+    ];
+
+    function login() {
+      let u = document.getElementById("username").value.trim();
+      let p = document.getElementById("password").value.trim();
+      let msg = document.getElementById("msg");
+
+      const user = users.find(x => x.username === u && x.password === p);
+
+      if (user) {
+        localStorage.setItem("loggedInUser", JSON.stringify(user));
+        window.location.href = "index.html"; // redirect to attendance page
+      } else {
+        msg.innerText = "❌ Invalid credentials!";
+        msg.style.color = "red";
+      }
+    }
+
+    function resetPassword() {
+      let mobile = prompt("📱 Enter your registered mobile number:");
+      const user = users.find(x => x.mobile === mobile);
+      if (user) {
+        alert("✅ OTP sent to " + mobile + " (simulation)\nYour password is: " + user.password);
+      } else {
+        alert("❌ Mobile number not registered!");
+      }
+    }
+
+    // ✅ Toggle password visibility
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+
+    togglePassword.addEventListener("click", () => {
+      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+      passwordInput.setAttribute("type", type);
+      togglePassword.classList.toggle("fa-eye");
+      togglePassword.classList.toggle("fa-eye-slash");
+    });
+  </script>
+</body>
+</html>
