@@ -1,11 +1,5 @@
-// --- Load students from localStorage or default sample ---
-let students = JSON.parse(localStorage.getItem("students")) || [
-  { id: 'S001', name: 'Ananya Sharma' },
-  { id: 'S002', name: 'Rahul Verma' },
-  { id: 'S003', name: 'Priya Singh' },
-  { id: 'S004', name: 'Amit Kumar' },
-  { id: 'S005', name: 'Sana Khan' }
-];
+// --- Load students from localStorage only (no hardcoded list)
+let students = JSON.parse(localStorage.getItem("students")) || [];
 
 // Attendance storage
 let attendance = JSON.parse(localStorage.getItem("attendance")) || {};
@@ -14,7 +8,6 @@ if (!attendance[today]) attendance[today] = [];
 
 // ---- DOM refs ----
 const studentTableBody = document.querySelector('#student-table tbody');
-const attendanceTableBody = document.querySelector('#attendance-table tbody');
 const studentIdInput = document.getElementById('student-id-input');
 const markPresentBtn = document.getElementById('mark-present');
 const addStudentBtn = document.getElementById('add-student');
@@ -28,7 +21,7 @@ function renderStudents(){
   studentTableBody.innerHTML = '';
 
   if(students.length === 0){
-    studentTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No students</td></tr>';
+    studentTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No students</td></tr>';
     return;
   }
 
@@ -37,6 +30,7 @@ function renderStudents(){
     row.innerHTML = `
       <td>${s.id}</td>
       <td>${s.name}</td>
+      <td>${s.dateAdded || "-"}</td>
       <td><button class="remove-student-btn" data-index="${index}">❌ Remove</button></td>
     `;
     studentTableBody.appendChild(row);
@@ -57,6 +51,8 @@ function renderStudents(){
 
 // --- Render Today's Attendance ---
 function renderToday(){
+  const attendanceTableBody = document.querySelector('#attendance-table tbody');
+  if (!attendanceTableBody) return;
   attendanceTableBody.innerHTML = '';
 
   if(!attendance[today] || attendance[today].length === 0){
@@ -76,7 +72,6 @@ function renderToday(){
     attendanceTableBody.appendChild(row);
   });
 
-  // Attach remove listeners
   document.querySelectorAll('.remove-btn').forEach(btn=>{
     btn.addEventListener('click', e=>{
       const idx = e.target.dataset.index;
@@ -99,15 +94,19 @@ function markPresent(studentId){
     return;
   }
 
-  attendance[today].push({
+  const record = {
     id: std.id,
     name: std.name,
     status: "Present",
     time: new Date().toLocaleTimeString()
-  });
+  };
 
+  attendance[today].push(record);
   localStorage.setItem("attendance", JSON.stringify(attendance));
   renderToday();
+
+  // ✅ Success alert
+  alert(`✔ ${record.name} (${record.id}) marked Present at ${record.time}`);
 }
 
 markPresentBtn.addEventListener('click', ()=>{
@@ -124,7 +123,7 @@ addStudentBtn.addEventListener('click', ()=>{
   if(!name || !id) return alert("Enter both fields");
   if(students.find(s => s.id.toLowerCase() === id.toLowerCase())) return alert("Student already exists");
 
-  students.push({id, name});
+  students.push({id, name, dateAdded: today});
   localStorage.setItem("students", JSON.stringify(students));
   newStudentName.value=''; newStudentID.value='';
   renderStudents();
@@ -132,30 +131,34 @@ addStudentBtn.addEventListener('click', ()=>{
 });
 
 // --- Clear Today ---
-clearTodayBtn.addEventListener('click', ()=>{
-  if(confirm("Clear all today's attendance?")){
-    attendance[today] = [];
-    localStorage.setItem("attendance", JSON.stringify(attendance));
-    renderToday();
-  }
-});
+if(clearTodayBtn){
+  clearTodayBtn.addEventListener('click', ()=>{
+    if(confirm("Clear all today's attendance?")){
+      attendance[today] = [];
+      localStorage.setItem("attendance", JSON.stringify(attendance));
+      renderToday();
+    }
+  });
+}
 
-// --- Export CSV ---
-exportCsvBtn.addEventListener('click', ()=>{
-  const rows = [['Student ID','Name','Status','Time']];
-  if(attendance[today]){
-    attendance[today].forEach(r=>{
-      rows.push([r.id, r.name, r.status, r.time]);
-    });
-  }
+// --- Export CSV (Today's attendance) ---
+if(exportCsvBtn){
+  exportCsvBtn.addEventListener('click', ()=>{
+    const rows = [['Student ID','Name','Status','Time']];
+    if(attendance[today]){
+      attendance[today].forEach(r=>{
+        rows.push([r.id, r.name, r.status, r.time]);
+      });
+    }
 
-  const csvContent = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csvContent], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `attendance_${today}.csv`; a.click();
-  URL.revokeObjectURL(url);
-});
+    const csvContent = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `attendance_${today}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  });
+}
 
 // --- Initial render ---
 renderStudents();

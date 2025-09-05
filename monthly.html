@@ -11,7 +11,7 @@
     <h1>Attendance Monitoring</h1>
     <nav class="navbar">
       <a href="index.html">Home</a>
-         <a href="today.html">Today's Attendance</a>
+      <a href="today.html">Today's Attendance</a>
       <a href="analytics.html">Analytics</a>
       <a href="monthly.html" class="active">Monthly Data</a>
     </nav>
@@ -23,13 +23,38 @@
   <main class="container">
     <section class="card">
       <h2>Monthly Attendance Data</h2>
+
+      <!-- Month Filter -->
+      <div style="margin-bottom:15px;">
+        <label for="month-filter">Filter by Month:</label>
+        <select id="month-filter">
+          <option value="all">All Months</option>
+          <option value="01">January</option>
+          <option value="02">February</option>
+          <option value="03">March</option>
+          <option value="04">April</option>
+          <option value="05">May</option>
+          <option value="06">June</option>
+          <option value="07">July</option>
+          <option value="08">August</option>
+          <option value="09">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+      </div>
+
       <table id="monthly-table">
         <thead>
           <tr><th>Date</th><th>Student ID</th><th>Name</th><th>Status</th></tr>
         </thead>
         <tbody></tbody>
       </table>
-      <button id="export-monthly">Export CSV</button>
+
+      <div class="controls-row">
+        <button id="export-monthly">Export CSV</button>
+        <button id="reset-monthly">Reset Table Data</button>
+      </div>
     </section>
   </main>
 

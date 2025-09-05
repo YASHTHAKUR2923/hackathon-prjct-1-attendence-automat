@@ -92,6 +92,7 @@ button:hover {
   justify-content: center;
   align-items: flex-start;
   padding: 30px;
+  gap: 20px;
 }
 
 /* ===== Cards ===== */
