@@ -1,13 +1,11 @@
-// today.js
 
 document.addEventListener("DOMContentLoaded", () => {
   const tableBody = document.querySelector("#attendance-table tbody");
+  const today = new Date().toISOString().slice(0, 10);
 
-  // Load attendance data from localStorage
   function loadTodayAttendance() {
-    const allData = JSON.parse(localStorage.getItem("attendance")) || [];
-    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    const todayData = allData.filter(entry => entry.date === today);
+    let attendance = JSON.parse(localStorage.getItem("attendance")) || {};
+    let todayData = attendance[today] || [];
 
     tableBody.innerHTML = "";
 
@@ -21,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     todayData.forEach((entry, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${entry.id}</td>
+        <td>${entry.id}</td>]
         <td>${entry.name}</td>
         <td>${entry.status}</td>
         <td>${entry.time}</td>
@@ -31,27 +29,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Remove a student from today's attendance
+  // --- Remove a student from today's attendance ---
   tableBody.addEventListener("click", (e) => {
     if (e.target.classList.contains("remove-btn")) {
       const index = e.target.dataset.index;
-      const allData = JSON.parse(localStorage.getItem("attendance")) || [];
-      const today = new Date().toISOString().split("T")[0];
+      let attendance = JSON.parse(localStorage.getItem("attendance")) || {};
+      let todayData = attendance[today] || [];
 
-      // Find today's data
-      const todayData = allData.filter(entry => entry.date === today);
-      const removeItem = todayData[index];
-
-      // Remove it from allData
-      const updatedData = allData.filter(entry => {
-        return !(entry.date === removeItem.date && entry.id === removeItem.id && entry.time === removeItem.time);
-      });
-
-      localStorage.setItem("attendance", JSON.stringify(updatedData));
+      todayData.splice(index, 1);
+      attendance[today] = todayData;
+      localStorage.setItem("attendance", JSON.stringify(attendance));
       loadTodayAttendance();
     }
   });
 
-  // Initial load
+  // --- Initial load ---
   loadTodayAttendance();
 });
+

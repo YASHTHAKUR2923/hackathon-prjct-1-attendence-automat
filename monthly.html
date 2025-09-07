@@ -11,9 +11,10 @@
     <h1>Attendance Monitoring</h1>
     <nav class="navbar">
       <a href="index.html">Home</a>
-      <a href="today.html">Today's Attendance</a>
+           <a href="monthly.html" class="active">Attendance Data</a>
+      <!-- <a href="today.html">Today's Attendance</a> -->
       <a href="analytics.html">Analytics</a>
-      <a href="monthly.html" class="active">Monthly Data</a>
+ 
     </nav>
     <div class="nav-right">
       <button class="logout-btn" onclick="logout()">Logout</button>
@@ -44,12 +45,19 @@
         </select>
       </div>
 
-      <table id="monthly-table">
-        <thead>
-          <tr><th>Date</th><th>Student ID</th><th>Name</th><th>Status</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+     <table id="monthly-table">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Student ID</th>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Action</th>   <!-- added -->
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
 
       <div class="controls-row">
         <button id="export-monthly">Export CSV</button>

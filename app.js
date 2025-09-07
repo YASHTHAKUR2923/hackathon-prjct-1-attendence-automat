@@ -7,13 +7,23 @@ if(!students) {
 
 // Attendance storage
 let attendance = JSON.parse(localStorage.getItem("attendance")) || {};
+
+// --- Remove old attendance entries older than today ---
 const today = new Date().toISOString().slice(0, 10);
+for (let date in attendance) {
+    if (date !== today) {
+        delete attendance[date];
+    }
+}
+localStorage.setItem("attendance", JSON.stringify(attendance));
+
 if (!attendance[today]) attendance[today] = [];
 
 // ---- DOM refs ----
 const studentTableBody = document.querySelector('#student-table tbody');
 const studentIdInput = document.getElementById('student-id-input');
 const markPresentBtn = document.getElementById('mark-present');
+const markAbsentBtn = document.getElementById('mark-absent');
 const addStudentBtn = document.getElementById('add-student');
 const newStudentName = document.getElementById('new-student-name');
 const newStudentID = document.getElementById('new-student-id');
@@ -102,7 +112,9 @@ function markPresent(studentId){
         id: std.id,
         name: std.name,
         status: "Present",
-        time: new Date().toLocaleTimeString()
+        time: new Date().toLocaleTimeString(),
+        date: today,
+        timestamp: Date.now()  // save exact time
     };
 
     attendance[today].push(record);

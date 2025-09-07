@@ -6,6 +6,7 @@ const monthFilter = document.getElementById('month-filter');
 let attendance = JSON.parse(localStorage.getItem("attendance")) || {};
 let filteredMonth = "all";
 
+// --- Render Monthly Table ---
 function renderMonthly(){
   tbody.innerHTML='';
   let found = false;
@@ -14,9 +15,15 @@ function renderMonthly(){
     // Expect date format like "2025-05-01"
     const month = date.split("-")[1];
     if(filteredMonth === "all" || month === filteredMonth){
-      attendance[date].forEach(r=>{
+      attendance[date].forEach((r, index)=>{
         const row = document.createElement('tr');
-        row.innerHTML = `<td>${date}</td><td>${r.id}</td><td>${r.name}</td><td>${r.status}</td>`;
+        row.innerHTML = `
+          <td>${date}</td>
+          <td>${r.id}</td>
+          <td>${r.name}</td>
+          <td>${r.status}</td>
+          <td><button class="delete-row" data-date="${date}" data-index="${index}">❌ Delete</button></td>
+        `;
         tbody.appendChild(row);
         found = true;
       });
@@ -24,10 +31,26 @@ function renderMonthly(){
   });
 
   if(!found){
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No records found</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No records found</td></tr>`;
   }
 }
 renderMonthly();
+
+// --- Row Delete Handler ---
+tbody.addEventListener("click", (e)=>{
+  if(e.target.classList.contains("delete-row")){
+    const date = e.target.dataset.date;
+    const index = e.target.dataset.index;
+    if(confirm("Delete this record?")){
+      attendance[date].splice(index,1);
+      if(attendance[date].length === 0){
+        delete attendance[date]; // remove empty date keys
+      }
+      localStorage.setItem("attendance", JSON.stringify(attendance));
+      renderMonthly();
+    }
+  }
+});
 
 // --- Handle Month Filter ---
 monthFilter.addEventListener("change", ()=>{
@@ -58,7 +81,9 @@ function downloadCSV(rows, filename){
   const blob = new Blob([csvContent], {type:'text/csv'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
+  a.href = url; 
+  a.download = filename; 
+  a.click();
   URL.revokeObjectURL(url);
 }
 
